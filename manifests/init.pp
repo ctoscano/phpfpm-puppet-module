@@ -61,20 +61,21 @@ class phpfpm {
     exec { "apc install" :
 		path => "/bin:/usr/bin",
 		command => "pecl install apc < /var/tmp/apc_default_inputs.txt",
-		require => [Package["php5-dev"], Package["php-pear"], File["apt options"]],
+		require => [Package["php5-dev"], Package["php-pear"], File["apc options"]],
 		unless => "pecl info apc",
 		notify => Service["php5-fpm"],
     }
 
-	file { "apt config" :
+	file { "apc config" :
 		path => "/etc/php5/conf.d/apc.ini",
 		content => template("phpfpm/apc.ini"),
 		notify => Service["php5-fpm"],
+		require => Package["php5-fpm"],
 	}
 
-	file { "apt options" :
+	file { "apc options" :
 		path => "/var/tmp/apc_default_inputs.txt",
-		content => template("phpfpm/default_apt_options.txt"),
+		content => template("phpfpm/default_apc_options.txt"),
 	}
 
 	pearchannel { ["pear.phpunit.de", "components.ez.no", "pear.symfony-project.com"]:
